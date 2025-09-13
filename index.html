@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AGRO AI - AI Farming Assistant</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-theme {
+            background: linear-gradient(160deg, #87CEEB 0%, #2E8B57 50%, #8B4513 100%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .typing-dot {
+            animation: typing-bubble 1.5s infinite;
+        }
+        @keyframes typing-bubble {
+            0%, 100% { transform: scale(0); }
+            50% { transform: scale(1); }
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        .chat-content ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .chat-content li {
+            margin-bottom: 4px;
+        }
+         .chat-content strong {
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body class="bg-theme">
+
+    <div class="flex flex-col h-screen items-center justify-center p-2 sm:p-4">
+        <div class="w-full max-w-2xl h-full flex flex-col bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden">
+            
+            <header class="bg-green-700/80 text-white p-4 flex items-center justify-center shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.5 16.9c0-1.2-1.2-2-2.5-2s-2.5.8-2.5 2c0 1.2 1.2 2 2.5 2s2.5-.8 2.5-2zM12 10c0-5 4.5-5 4.5-5C12 5 12 2 12 2s0 3-4.5 3c0 0 4.5 0 4.5 5zM12 14c-1.3 0-2.5.8-2.5 2s1.2 2 2.5 2 2.5-.8 2.5-2-1.2-2-2.5-2z"/>
+                    <path d="M8.5 16.9c0-1.2-1.2-2-2.5-2s-2.5.8-2.5 2c0 1.2 1.2 2 2.5 2s2.5-.8 2.5-2zM12 22V10"/>
+                </svg>
+                <div>
+                    <h1 class="text-xl font-bold">AGRO AI</h1>
+                    <p class="text-xs text-green-200">Your AI Farming Assistant</p>
+                </div>
+            </header>
+
+            <main id="chat-messages" class="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-4"></main>
+
+            <div id="typing-indicator" class="hidden p-4">
+                <div class="flex items-start gap-2.5">
+                    <div class="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center font-bold text-green-700 text-sm">KS</div>
+                    <div class="bg-gray-200 rounded-lg p-3">
+                        <div class="flex items-center justify-center space-x-1">
+                            <div class="typing-dot w-2 h-2 bg-gray-500 rounded-full"></div>
+                            <div class="typing-dot w-2 h-2 bg-gray-500 rounded-full"></div>
+                            <div class="typing-dot w-2 h-2 bg-gray-500 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="example-prompts" class="p-2 border-t border-gray-200">
+                <p class="text-center text-xs text-gray-500 mb-2">Try asking something like:</p>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button class="prompt-btn">How to manage coconut pests?</button>
+                    <button class="prompt-btn">നെൽകൃഷിക്ക് ഏറ്റവും നല്ല വളം ഏതാണ്?</button>
+                    <button class="prompt-btn">Best season for rubber tapping?</button>
+                </div>
+            </div>
+
+            <footer class="p-4 border-t border-gray-200 bg-white/50">
+                <form id="chat-form" class="flex items-center space-x-2">
+                    <textarea id="user-input" placeholder="Ask your farming question..." 
+                              class="flex-1 p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 resize-none" rows="1"></textarea>
+                    <button type="submit" class="bg-green-600 text-white rounded-full p-3 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                           <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                        </svg>
+                    </button>
+                </form>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const submitButton = chatForm.querySelector('button[type="submit"]');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const examplePromptsContainer = document.getElementById('example-prompts');
+
+        function addMessage(text, sender) {
+            const messageWrapper = document.createElement('div');
+            const messageBubble = document.createElement('div');
+            
+            messageWrapper.className = `flex items-start gap-2.5 ${sender === 'user' ? 'justify-end' : ''}`;
+            messageBubble.className = `p-3 rounded-xl max-w-lg ${sender === 'user' ? 'bg-green-600 text-white rounded-br-none' : 'bg-gray-100 text-gray-800 rounded-bl-none'}`;
+
+            if (sender === 'bot') {
+                const botAvatar = document.createElement('div');
+                botAvatar.className = 'w-10 h-10 rounded-full bg-green-200 flex items-center justify-center font-bold text-green-700 text-sm flex-shrink-0';
+                botAvatar.textContent = 'KS';
+                messageWrapper.appendChild(botAvatar);
+
+                const textElement = document.createElement('div');
+                textElement.className = 'chat-content'; 
+                let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                formattedText = formattedText.replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>')
+                                           .replace(/<\/ul>\n<ul>/g, '');
+                textElement.innerHTML = formattedText;
+                messageBubble.appendChild(textElement);
+
+                const speakButton = createSpeakButton(text.replace(/<[^>]*>?/gm, ''));
+                messageBubble.appendChild(speakButton);
+            } else {
+                messageBubble.textContent = text;
+            }
+
+            messageWrapper.appendChild(messageBubble);
+            chatMessages.appendChild(messageWrapper);
+            scrollToBottom();
+        }
+
+        function createSpeakButton(text) {
+            const button = document.createElement('button');
+            button.className = 'mt-2 text-green-600 hover:text-green-800 flex items-center gap-1 text-sm';
+            button.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  <path d="M16.343 4.343a1 1 0 011.414 1.414A5.975 5.975 0 0119 10a5.975 5.975 0 01-1.243 3.536 1 1 0 01-1.414-1.414A3.975 3.975 0 0017 10c0-1.104-.448-2.104-1.172-2.828a1 1 0 011.515-1.329z" />
+                </svg>
+                <span>Speak</span>
+            `;
+            button.onclick = () => speakText(text);
+            return button;
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = text.match(/[\u0D00-\u0D7F]/) ? 'ml-IN' : 'en-IN';
+                speechSynthesis.speak(utterance);
+            } else {
+                alert("Sorry, your browser doesn't support text-to-speech.");
+            }
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function toggleTypingIndicator(show) {
+            typingIndicator.style.display = show ? 'flex' : 'none';
+            if (show) scrollToBottom();
+        }
+
+        // ==============================================================================
+        // ==                            START OF API SETUP                            ==
+        // ==============================================================================
+
+        // ⚠️ STEP 1: Get your API Key from Google AI Studio and paste it below.
+        // ⚠️ WARNING: For development only. Do not expose your API key in a public website.
+        const API_KEY = "AIzaSyCMxlpxuGu75xIfKOuCE4dpix1kRZ3SD3k";
+
+        // ==============================================================================
+        // ==                             END OF API SETUP                             ==
+        // ==============================================================================
+        
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+
+        async function getGeminiResponse(query) {
+             const systemInstruction = {
+                role: "model",
+                parts: [{
+                    text: "You are Krishi Sakhi, an expert AI assistant for farming in Kerala, India. Provide helpful, concise, and practical advice to farmers. Use simple language. Format your answers with markdown, using bold text and bullet points where appropriate. If the user asks in Malayalam, respond in Malayalam. Otherwise, respond in English."
+                }]
+            };
+
+            const userMessage = {
+                role: "user",
+                parts: [{ text: query }]
+            };
+
+            const payload = {
+                contents: [systemInstruction, userMessage],
+                 "generationConfig": {
+                    "temperature": 0.7,
+                    "topP": 1,
+                    "topK": 1,
+                    "maxOutputTokens": 2048
+                }
+            };
+            
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorDetails = await response.text();
+                throw new Error(`API Error: ${response.status} - ${errorDetails}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                return "I'm sorry, I couldn't generate a response for that. It might be due to a safety policy or an issue with the request. Please try rephrasing your question.";
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const query = userInput.value.trim();
+            if (!query) return;
+
+            addMessage(query, 'user');
+            userInput.value = '';
+            autoResizeTextarea();
+            toggleTypingIndicator(true);
+            submitButton.disabled = true;
+            if (examplePromptsContainer) {
+                examplePromptsContainer.style.display = 'none';
+            }
+
+            try {
+                const botResponse = await getGeminiResponse(query);
+                addMessage(botResponse, 'bot');
+            } catch (err) {
+                console.error("Error:", err);
+                addMessage("Sorry, I'm having trouble connecting to the AI service. Please check the API key and your connection.", 'bot');
+            } finally {
+                toggleTypingIndicator(false);
+                submitButton.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        function autoResizeTextarea() {
+            userInput.style.height = 'auto';
+            userInput.style.height = userInput.scrollHeight + 'px';
+        }
+
+        chatForm.addEventListener('submit', handleFormSubmit);
+        userInput.addEventListener('input', autoResizeTextarea);
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                chatForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        document.querySelectorAll('.prompt-btn').forEach(button => {
+            button.classList.add(
+                'px-3', 'py-1', 'bg-green-100', 'text-green-800', 'rounded-full',
+                'text-sm', 'hover:bg-green-200', 'transition-colors', 'border', 'border-green-200'
+            );
+            button.addEventListener('click', () => {
+                userInput.value = button.textContent;
+                chatForm.dispatchEvent(new Event('submit'));
+                userInput.focus();
+            });
+        });
+
+        window.onload = () => {
+            addMessage("Welcome to Krishi Sakhi! I am your AI assistant for farming in Kerala. How can I help you today?", 'bot');
+            userInput.focus();
+        };
+    </script>
+</body>
+</html>
