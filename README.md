@@ -1,1 +1,1 @@
-# AgroAI
+# Agri-AI
